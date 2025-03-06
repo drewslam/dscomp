@@ -1,8 +1,11 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
 	"os"
+
+	"github.com/drewslam/cccomp/huffman"
 )
 
 type Compressor struct {
@@ -14,22 +17,54 @@ func (c *Compressor) compress(source string) error {
 		c.dictionary[source[i]]++
 	}
 
-	for byt, count := range c.dictionary {
-		switch byt {
-		case '\n':
-			fmt.Printf("'\\n' (ASCII %d): %d\n", byt, count)
-		case '\r':
-			fmt.Printf("'\\r' (ASCII %d): %d\n", byt, count)
-		case '\t':
-			fmt.Printf("'\\t' (ASCII %d): %d\n", byt, count)
-		default:
-			if byt >= 32 && byt < 127 {
-				fmt.Printf("%c (ASCII %d): %d\n", byt, byt, count)
-			} else {
-				fmt.Printf("(ASCII %d): %d\n", byt, count)
+	fmt.Printf("Dictionary has %d unique characters\n", len(c.dictionary))
+	/*
+		for byt, count := range c.dictionary {
+			switch byt {
+			case '\n':
+				fmt.Printf("'\\n' (ASCII %d): %d\n", byt, count)
+			case '\r':
+				fmt.Printf("'\\r' (ASCII %d): %d\n", byt, count)
+			case '\t':
+				fmt.Printf("'\\t' (ASCII %d): %d\n", byt, count)
+			default:
+				if byt >= 32 && byt < 127 {
+					fmt.Printf("%c (ASCII %d): %d\n", byt, byt, count)
+				} else {
+					fmt.Printf("(ASCII %d): %d\n", byt, count)
+				}
 			}
 		}
+	*/
+	if len(c.dictionary) == 0 {
+		return fmt.Errorf("Empty source file.")
 	}
+
+	tempHeap := &huffman.TreeHeap{}
+	heap.Init(tempHeap)
+
+	for byt, count := range c.dictionary {
+		if count <= 0 {
+			continue
+		}
+		leaf := huffman.NewLeafNode(byt, count)
+		tempTree := &huffman.Tree{}
+		tempTree.SetRoot(leaf)
+		heap.Push(tempHeap, tempTree)
+	}
+
+	if tempHeap.Len() == 0 {
+		return fmt.Errorf("No valid characters found.")
+	}
+
+	huffmanTree := huffman.BuildTree(*tempHeap)
+
+	if huffmanTree == nil || huffmanTree.Root() == nil {
+		return fmt.Errorf("Failed to build Huffman tree.")
+	}
+
+	fmt.Println("Huffman tree weight:", huffmanTree.Weight())
+
 	return nil
 }
 
