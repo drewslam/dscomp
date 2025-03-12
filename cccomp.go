@@ -18,24 +18,7 @@ func (c *Compressor) compress(source string) error {
 	}
 
 	fmt.Printf("Dictionary has %d unique characters\n", len(c.dictionary))
-	/*
-		for byt, count := range c.dictionary {
-			switch byt {
-			case '\n':
-				fmt.Printf("'\\n' (ASCII %d): %d\n", byt, count)
-			case '\r':
-				fmt.Printf("'\\r' (ASCII %d): %d\n", byt, count)
-			case '\t':
-				fmt.Printf("'\\t' (ASCII %d): %d\n", byt, count)
-			default:
-				if byt >= 32 && byt < 127 {
-					fmt.Printf("%c (ASCII %d): %d\n", byt, byt, count)
-				} else {
-					fmt.Printf("(ASCII %d): %d\n", byt, count)
-				}
-			}
-		}
-	*/
+
 	if len(c.dictionary) == 0 {
 		return fmt.Errorf("Empty source file.")
 	}
