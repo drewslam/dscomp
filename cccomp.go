@@ -17,8 +17,6 @@ func (c *Compressor) compress(source string) error {
 		c.dictionary[source[i]]++
 	}
 
-	fmt.Printf("Dictionary has %d unique characters\n", len(c.dictionary))
-
 	if len(c.dictionary) == 0 {
 		return fmt.Errorf("Empty source file.")
 	}
@@ -46,7 +44,10 @@ func (c *Compressor) compress(source string) error {
 		return fmt.Errorf("Failed to build Huffman tree.")
 	}
 
-	fmt.Println("Huffman tree weight:", huffmanTree.Weight())
+	codeTable := huffman.GenerateCodeTable(huffmanTree.Root())
+	for char, code := range codeTable {
+		fmt.Printf("Character '%c' (ASCII %d): %s\n", char, char, code)
+	}
 
 	return nil
 }
