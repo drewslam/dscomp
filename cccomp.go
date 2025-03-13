@@ -13,6 +13,10 @@ type Compressor struct {
 }
 
 func (c *Compressor) compress(source string) error {
+	if c.dictionary == nil {
+		c.dictionary = make(map[byte]int)
+	}
+
 	for i := 0; i < len(source); i++ {
 		c.dictionary[source[i]]++
 	}
@@ -28,9 +32,10 @@ func (c *Compressor) compress(source string) error {
 		if count <= 0 {
 			continue
 		}
-		leaf := huffman.NewLeafNode(byt, count)
-		tempTree := &huffman.Tree{}
-		tempTree.SetRoot(leaf)
+		tempTree := huffman.NewTree(count, byt)
+		// leaf := huffman.NewLeafNode(byt, count)
+		// tempTree := &huffman.Tree{}
+		// tempTree.SetRoot(leaf)
 		heap.Push(tempHeap, tempTree)
 	}
 
@@ -38,7 +43,7 @@ func (c *Compressor) compress(source string) error {
 		return fmt.Errorf("No valid characters found.")
 	}
 
-	huffmanTree := huffman.BuildTree(*tempHeap)
+	huffmanTree := huffman.BuildTree(tempHeap)
 
 	if huffmanTree == nil || huffmanTree.Root() == nil {
 		return fmt.Errorf("Failed to build Huffman tree.")
@@ -46,7 +51,7 @@ func (c *Compressor) compress(source string) error {
 
 	codeTable := huffman.GenerateCodeTable(huffmanTree.Root())
 	for char, code := range codeTable {
-		fmt.Printf("Character '%c' (ASCII %d): %s\n", char, char, code)
+		fmt.Printf("Character '%q' (ASCII %d): %s\n", char, char, code)
 	}
 
 	return nil

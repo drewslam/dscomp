@@ -21,23 +21,23 @@ func (t *TreeHeap) Pop() interface{} {
 	return x
 }
 
-func BuildTree(trees TreeHeap) *Tree {
+func BuildTree(trees *TreeHeap) *Tree {
 	// Convert to heap
-	heap.Init(&trees)
+	heap.Init(trees)
 
 	// Continue until only one tree remaining
 	for trees.Len() > 1 {
-		tmp1 := heap.Pop(&trees).(*Tree)
-		tmp2 := heap.Pop(&trees).(*Tree)
+		tmp1 := heap.Pop(trees).(*Tree)
+		tmp2 := heap.Pop(trees).(*Tree)
 
 		combinedWeight := tmp1.Weight() + tmp2.Weight()
-		newTree := NewTree(combinedWeight, tmp1.Root(), tmp2.Root())
+		newTree := NewTree(combinedWeight, tmp2.Root(), tmp1.Root())
 
-		heap.Push(&trees, newTree)
+		heap.Push(trees, newTree)
 	}
 
-	if trees.Len() > 0 {
-		return trees[0]
+	if trees.Len() == 0 {
+		return nil
 	}
-	return nil
+	return heap.Pop(trees).(*Tree)
 }

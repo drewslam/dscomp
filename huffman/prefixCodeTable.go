@@ -8,19 +8,16 @@ func GenerateCodeTable(root Node) CodeTable {
 		return codeTable
 	}
 
-	generateCodes(root, "", codeTable)
+	generateCodes(root, []byte{}, codeTable)
 	return codeTable
 }
 
-func generateCodes(node Node, currentCode string, codeTable CodeTable) {
-	if node.IsLeaf() {
-		leaf := node.(*Leaf)
-		codeTable[leaf.Value()] = currentCode
-		return
+func generateCodes(node Node, prefix []byte, codeTable CodeTable) {
+	switch n := node.(type) {
+	case *Leaf:
+		codeTable[n.element] = string(prefix)
+	case *Internal:
+		generateCodes(n.Left(), append(prefix, '0'), codeTable)
+		generateCodes(n.Right(), append(prefix, '1'), codeTable)
 	}
-
-	internal := node.(*Internal)
-
-	generateCodes(internal.Left(), currentCode+"0", codeTable)
-	generateCodes(internal.Right(), currentCode+"1", codeTable)
 }

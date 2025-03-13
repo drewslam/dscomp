@@ -26,9 +26,7 @@ func NewTree(wt int, args ...interface{}) *Tree {
 		}
 	}
 
-	return &Tree{
-		root: NewLeafNode(0, 0), // Default for invalid argument format
-	}
+	return nil
 }
 
 func (t *Tree) SetRoot(r Node) {
@@ -48,7 +46,10 @@ func (t *Tree) Weight() int {
 
 func (t *Tree) CompareTo(u interface{}) int {
 	that, ok := u.(*Tree)
-	if !ok {
+	if !ok || that == nil || that.root == nil {
+		return 1
+	}
+	if t == nil || t.root == nil {
 		return 1
 	}
 
