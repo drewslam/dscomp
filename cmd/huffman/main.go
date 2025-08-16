@@ -9,11 +9,11 @@ import (
 )
 
 func runFile(c *huffman.Compressor) error {
-	bytes, err := os.ReadFile(c.InPath)
+	data, err := os.ReadFile(c.InPath)
 	if err != nil {
 		return fmt.Errorf("Failed to read file: %v", err)
 	}
-	return c.Compress(string(bytes), len(bytes))
+	return c.Compress(data, len(data))
 }
 
 func main() {

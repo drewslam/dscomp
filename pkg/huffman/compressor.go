@@ -12,13 +12,13 @@ type Compressor struct {
 	Dictionary map[byte]int
 }
 
-func (c *Compressor) Compress(source string, originalSize int) error {
+func (c *Compressor) Compress(source []byte, originalSize int) error {
 	if c.Dictionary == nil {
 		c.Dictionary = make(map[byte]int)
 	}
 
-	for i := 0; i < len(source); i++ {
-		c.Dictionary[source[i]]++
+	for _, b := range source {
+		c.Dictionary[b]++
 	}
 
 	if len(c.Dictionary) == 0 {
@@ -51,8 +51,8 @@ func (c *Compressor) Compress(source string, originalSize int) error {
 	var bitCount uint8
 	encodedData := make([]byte, 0, (len(source) * 8 / 8))
 
-	for i := 0; i < len(source); i++ {
-		char := source[i]
+	for _, b := range source {
+		char := b
 		if code, exists := codeTable[char]; exists {
 			for _, bit := range code {
 				bitBuffer <<= 1
